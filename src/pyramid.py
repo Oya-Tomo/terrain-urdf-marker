@@ -3,7 +3,7 @@ from xml.etree import ElementTree as ET
 
 from utils import create_box_with_coordinates
 
-root = ET.Element("robot")
+root = ET.Element("robot", name="pyramid_terrain")
 
 # create materials
 material = ET.SubElement(root, "material", name="white")
@@ -51,6 +51,12 @@ for i in range(steps):
 
     # create collision origin
     create_box_with_coordinates(collision, min_xyz, max_xyz)
+
+for i in range(steps - 1):
+    joint = ET.SubElement(root, "joint", name=f"step_{i}_joint", type="fixed")
+    ET.SubElement(joint, "parent", link=f"step_{i}")
+    ET.SubElement(joint, "child", link=f"step_{i + 1}")
+    ET.SubElement(joint, "origin", xyz="0 0 0", rpy="0 0 0")
 
 tree = ET.ElementTree(root)
 ET.indent(tree, space="  ", level=0)

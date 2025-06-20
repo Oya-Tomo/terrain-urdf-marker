@@ -4,7 +4,7 @@ import random
 
 from utils import create_box_with_coordinates
 
-root = ET.Element("robot")
+root = ET.Element("robot", name="cell_terrain")
 
 # create materials
 material = ET.SubElement(root, "material", name="white")
@@ -44,6 +44,19 @@ for i in range(rows):
             ((j + 1) * width, (i + 1) * length, height),
         )
 
+for i in range(rows):
+    if i > 0:
+        joint = ET.SubElement(
+            root, "joint", name=f"cell_{i - 1}_{0}_top_joint", type="fixed"
+        )
+        ET.SubElement(joint, "parent", link=f"cell_{i - 1}_{0}")
+        ET.SubElement(joint, "child", link=f"cell_{i}_{0}")
+        ET.SubElement(joint, "origin", xyz="0 0 0", rpy="0 0 0")
+    for j in range(cols - 1):
+        joint = ET.SubElement(root, "joint", name=f"cell_{i}_{j}_joint", type="fixed")
+        ET.SubElement(joint, "parent", link=f"cell_{i}_{j}")
+        ET.SubElement(joint, "child", link=f"cell_{i}_{j + 1}")
+        ET.SubElement(joint, "origin", xyz="0 0 0", rpy="0 0 0")
 
 tree = ET.ElementTree(root)
 ET.indent(tree, space="  ", level=0)
